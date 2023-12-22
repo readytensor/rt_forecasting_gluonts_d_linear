@@ -81,7 +81,7 @@ class Forecaster:
 
             batch_size (int) The size of the batches to be used for training (default: 32).
 
-            early_stopping (bool): If true, use early stopping,
+            early_stopping (bool): If true, use early stopping.
 
             early_stopping_patience (int): Patience used by early stopper.
 
@@ -108,6 +108,7 @@ class Forecaster:
         self.use_exogenous = use_exogenous and data_schema.future_covariates
         self._is_trained = False
         self.freq = self.map_frequency(data_schema.frequency)
+        self.early_stopping = early_stopping
         self.history_length = None
         self.gluonts_dataset = None
 
@@ -127,7 +128,7 @@ class Forecaster:
             mode="min",
         )
 
-        if early_stopping:
+        if self.early_stopping:
             self.trainer_kwargs["callbacks"] = [early_stopping]
 
         if torch.cuda.is_available():
