@@ -105,7 +105,10 @@ class Forecaster:
         self.min_delta = min_delta
         self.trainer_kwargs = trainer_kwargs
         self.random_state = random_state
-        self.use_exogenous = use_exogenous and data_schema.future_covariates
+        self.use_exogenous = (
+            use_exogenous
+            and len(data_schema.future_covariates + data_schema.static_covariates) > 0
+        )
         self._is_trained = False
         self.freq = self.map_frequency(data_schema.frequency)
         self.early_stopping = early_stopping
@@ -236,7 +239,7 @@ class Forecaster:
         cov_names = []
 
         if self.use_exogenous:
-            cov_names = data_schema.future_covariates
+            cov_names = data_schema.future_covariates + data_schema.static_covariates
 
         # Put future covariates into separate list
         all_covariates = []
@@ -297,7 +300,7 @@ class Forecaster:
 
         cov_names = []
         if self.use_exogenous:
-            cov_names = data_schema.future_covariates
+            cov_names = data_schema.future_covariates + data_schema.static_covariates
 
         all_covariates = []
         for series in all_series:
